@@ -9,6 +9,7 @@ import { GoogleContinueButton } from "@/components/auth/google-continue-button";
 const auth0Domain = (import.meta.env.VITE_AUTH0_DOMAIN as string | undefined)?.trim() || "";
 const auth0ClientId = (import.meta.env.VITE_AUTH0_CLIENT_ID as string | undefined)?.trim() || "";
 const auth0Audience = (import.meta.env.VITE_AUTH0_AUDIENCE as string | undefined)?.trim() || "";
+const auth0RedirectUri = (import.meta.env.VITE_AUTH0_REDIRECT_URI as string | undefined)?.trim() || "";
 const isAuth0Enabled = Boolean(auth0Domain && auth0ClientId);
 const auth0StateStorageKey = "auth0:oauth-state";
 const auth0StateSessionStorageKey = "auth0:oauth-state:session";
@@ -74,7 +75,7 @@ export function LoginPage() {
         localStorage.removeItem(auth0StateStorageKey);
         sessionStorage.removeItem(auth0StateSessionStorageKey);
 
-        const redirectUri = `${window.location.origin}/login`;
+        const redirectUri = auth0RedirectUri || `${window.location.origin}/login`;
         const res = await fetch(apiUrl("/api/auth/auth0-login"), {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -122,7 +123,7 @@ export function LoginPage() {
     setIsGoogleLoading(true);
 
     try {
-      const redirectUri = `${window.location.origin}/login`;
+      const redirectUri = auth0RedirectUri || `${window.location.origin}/login`;
       const state = generateOAuthState();
       localStorage.setItem(auth0StateStorageKey, state);
       sessionStorage.setItem(auth0StateSessionStorageKey, state);

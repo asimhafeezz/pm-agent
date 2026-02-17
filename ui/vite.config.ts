@@ -11,7 +11,7 @@ export default defineConfig({
     },
   },
   server: {
-    port: 7000,
+    port: 7001,
     proxy: {
       "/agent": {
         target: "http://localhost:6003",
