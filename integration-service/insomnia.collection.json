@@ -1,0 +1,340 @@
+{
+  "_type": "export",
+  "__export_format": 4,
+  "__export_date": "2026-01-31T00:00:00.000Z",
+  "__export_source": "codex",
+  "resources": [
+    {
+      "_id": "wrk_fin_agent",
+      "_type": "workspace",
+      "name": "Fin Agent Integration Service",
+      "description": "",
+      "scope": "collection"
+    },
+    {
+      "_id": "env_base",
+      "_type": "environment",
+      "parentId": "wrk_fin_agent",
+      "name": "Base Environment",
+      "data": {
+        "base_url": "http://localhost:3001/integration",
+        "fmp_symbol": "AAPL",
+        "twelve_symbol": "AAPL",
+        "news_query": "apple",
+        "news_page": "",
+        "country": "us",
+        "language": "en",
+        "interval": "1day",
+        "outputsize": 30,
+        "pair": "USD/PKR",
+        "amount": 100
+      }
+    },
+    {
+      "_id": "fld_market_data",
+      "_type": "request_group",
+      "parentId": "wrk_fin_agent",
+      "name": "Market Data (FMP)"
+    },
+    {
+      "_id": "fld_market_prices",
+      "_type": "request_group",
+      "parentId": "wrk_fin_agent",
+      "name": "Market Prices (Twelve Data)"
+    },
+    {
+      "_id": "fld_news",
+      "_type": "request_group",
+      "parentId": "wrk_fin_agent",
+      "name": "News (NewsData.io)"
+    },
+
+    {
+      "_id": "req_fmp_search",
+      "_type": "request",
+      "parentId": "fld_market_data",
+      "name": "Search Name",
+      "method": "GET",
+      "url": "{{ _.base_url }}/tools/market-data/search-name",
+      "parameters": [
+        { "name": "query", "value": "{{ _.news_query }}" }
+      ]
+    },
+    {
+      "_id": "req_fmp_profile",
+      "_type": "request",
+      "parentId": "fld_market_data",
+      "name": "Company Profile",
+      "method": "GET",
+      "url": "{{ _.base_url }}/tools/market-data/profile",
+      "parameters": [
+        { "name": "symbol", "value": "{{ _.fmp_symbol }}" }
+      ]
+    },
+    {
+      "_id": "req_fmp_fundamentals",
+      "_type": "request",
+      "parentId": "fld_market_data",
+      "name": "Fundamentals",
+      "method": "GET",
+      "url": "{{ _.base_url }}/tools/market-data/fundamentals",
+      "parameters": [
+        { "name": "symbol", "value": "{{ _.fmp_symbol }}" }
+      ]
+    },
+    {
+      "_id": "req_fmp_earnings",
+      "_type": "request",
+      "parentId": "fld_market_data",
+      "name": "Earnings",
+      "method": "GET",
+      "url": "{{ _.base_url }}/tools/market-data/earnings",
+      "parameters": [
+        { "name": "symbol", "value": "{{ _.fmp_symbol }}" }
+      ]
+    },
+    {
+      "_id": "req_fmp_earnings_calendar",
+      "_type": "request",
+      "parentId": "fld_market_data",
+      "name": "Earnings Calendar",
+      "method": "GET",
+      "url": "{{ _.base_url }}/tools/market-data/earnings-calendar",
+      "parameters": [
+        { "name": "from", "value": "" },
+        { "name": "to", "value": "" }
+      ]
+    },
+    {
+      "_id": "req_fmp_analyst",
+      "_type": "request",
+      "parentId": "fld_market_data",
+      "name": "Analyst Estimates",
+      "method": "GET",
+      "url": "{{ _.base_url }}/tools/market-data/analyst-estimates",
+      "parameters": [
+        { "name": "symbol", "value": "{{ _.fmp_symbol }}" },
+        { "name": "period", "value": "annual" },
+        { "name": "limit", "value": "10" },
+        { "name": "page", "value": "0" }
+      ]
+    },
+
+    {
+      "_id": "req_td_search",
+      "_type": "request",
+      "parentId": "fld_market_prices",
+      "name": "Search Symbols",
+      "method": "GET",
+      "url": "{{ _.base_url }}/tools/market-prices/search-symbols",
+      "parameters": [
+        { "name": "query", "value": "{{ _.news_query }}" },
+        { "name": "exchange", "value": "" },
+        { "name": "country", "value": "" }
+      ]
+    },
+    {
+      "_id": "req_td_list_stocks",
+      "_type": "request",
+      "parentId": "fld_market_prices",
+      "name": "List Stocks",
+      "method": "GET",
+      "url": "{{ _.base_url }}/tools/market-prices/list-stocks",
+      "parameters": [
+        { "name": "exchange", "value": "NASDAQ" }
+      ]
+    },
+    {
+      "_id": "req_td_list_crypto",
+      "_type": "request",
+      "parentId": "fld_market_prices",
+      "name": "List Crypto Pairs",
+      "method": "GET",
+      "url": "{{ _.base_url }}/tools/market-prices/list-crypto-pairs"
+    },
+    {
+      "_id": "req_td_list_commodities",
+      "_type": "request",
+      "parentId": "fld_market_prices",
+      "name": "List Commodity Pairs",
+      "method": "GET",
+      "url": "{{ _.base_url }}/tools/market-prices/list-commodity-pairs"
+    },
+    {
+      "_id": "req_td_price",
+      "_type": "request",
+      "parentId": "fld_market_prices",
+      "name": "Live Price",
+      "method": "GET",
+      "url": "{{ _.base_url }}/tools/market-prices/live-price",
+      "parameters": [
+        { "name": "symbol", "value": "{{ _.twelve_symbol }}" }
+      ]
+    },
+    {
+      "_id": "req_td_quote",
+      "_type": "request",
+      "parentId": "fld_market_prices",
+      "name": "Quote",
+      "method": "GET",
+      "url": "{{ _.base_url }}/tools/market-prices/quote",
+      "parameters": [
+        { "name": "symbol", "value": "{{ _.twelve_symbol }}" }
+      ]
+    },
+    {
+      "_id": "req_td_time_series",
+      "_type": "request",
+      "parentId": "fld_market_prices",
+      "name": "Time Series",
+      "method": "GET",
+      "url": "{{ _.base_url }}/tools/market-prices/time-series",
+      "parameters": [
+        { "name": "symbol", "value": "{{ _.twelve_symbol }}" },
+        { "name": "interval", "value": "{{ _.interval }}" },
+        { "name": "outputsize", "value": "{{ _.outputsize }}" },
+        { "name": "start_date", "value": "" },
+        { "name": "end_date", "value": "" }
+      ]
+    },
+    {
+      "_id": "req_td_earliest",
+      "_type": "request",
+      "parentId": "fld_market_prices",
+      "name": "Earliest Timestamp",
+      "method": "GET",
+      "url": "{{ _.base_url }}/tools/market-prices/earliest-timestamp",
+      "parameters": [
+        { "name": "symbol", "value": "{{ _.twelve_symbol }}" },
+        { "name": "interval", "value": "{{ _.interval }}" }
+      ]
+    },
+    {
+      "_id": "req_td_batch_price",
+      "_type": "request",
+      "parentId": "fld_market_prices",
+      "name": "Batch Price",
+      "method": "GET",
+      "url": "{{ _.base_url }}/tools/market-prices/batch-price",
+      "parameters": [
+        { "name": "symbols", "value": "AAPL,MSFT" },
+        { "name": "interval", "value": "{{ _.interval }}" }
+      ]
+    },
+    {
+      "_id": "req_td_batch_quote",
+      "_type": "request",
+      "parentId": "fld_market_prices",
+      "name": "Batch Quote",
+      "method": "GET",
+      "url": "{{ _.base_url }}/tools/market-prices/batch-quote",
+      "parameters": [
+        { "name": "symbols", "value": "AAPL,MSFT" }
+      ]
+    },
+    {
+      "_id": "req_td_exchange_rate",
+      "_type": "request",
+      "parentId": "fld_market_prices",
+      "name": "Exchange Rate",
+      "method": "GET",
+      "url": "{{ _.base_url }}/tools/market-prices/exchange-rate",
+      "parameters": [
+        { "name": "pair", "value": "{{ _.pair }}" }
+      ]
+    },
+    {
+      "_id": "req_td_convert",
+      "_type": "request",
+      "parentId": "fld_market_prices",
+      "name": "Convert Currency",
+      "method": "GET",
+      "url": "{{ _.base_url }}/tools/market-prices/convert-currency",
+      "parameters": [
+        { "name": "amount", "value": "{{ _.amount }}" },
+        { "name": "from", "value": "USD" },
+        { "name": "to", "value": "PKR" }
+      ]
+    },
+
+    {
+      "_id": "req_news_latest",
+      "_type": "request",
+      "parentId": "fld_news",
+      "name": "Latest News",
+      "method": "GET",
+      "url": "{{ _.base_url }}/tools/news/latest",
+      "parameters": [
+        { "name": "q", "value": "{{ _.news_query }}" },
+        { "name": "country", "value": "{{ _.country }}" },
+        { "name": "language", "value": "{{ _.language }}" },
+        { "name": "category", "value": "" },
+        { "name": "domain", "value": "" },
+        { "name": "page", "value": "{{ _.news_page }}" },
+        { "name": "size", "value": "10" }
+      ]
+    },
+    {
+      "_id": "req_news_archive",
+      "_type": "request",
+      "parentId": "fld_news",
+      "name": "Archive News",
+      "method": "GET",
+      "url": "{{ _.base_url }}/tools/news/archive",
+      "parameters": [
+        { "name": "q", "value": "{{ _.news_query }}" },
+        { "name": "from_date", "value": "" },
+        { "name": "to_date", "value": "" },
+        { "name": "country", "value": "{{ _.country }}" },
+        { "name": "language", "value": "{{ _.language }}" },
+        { "name": "category", "value": "" },
+        { "name": "domain", "value": "" },
+        { "name": "page", "value": "{{ _.news_page }}" },
+        { "name": "size", "value": "10" }
+      ]
+    },
+    {
+      "_id": "req_news_market",
+      "_type": "request",
+      "parentId": "fld_news",
+      "name": "Market News",
+      "method": "GET",
+      "url": "{{ _.base_url }}/tools/news/market",
+      "parameters": [
+        { "name": "q", "value": "{{ _.news_query }}" },
+        { "name": "symbol", "value": "{{ _.twelve_symbol }}" },
+        { "name": "country", "value": "{{ _.country }}" },
+        { "name": "language", "value": "{{ _.language }}" },
+        { "name": "page", "value": "{{ _.news_page }}" },
+        { "name": "size", "value": "10" }
+      ]
+    },
+    {
+      "_id": "req_news_crypto",
+      "_type": "request",
+      "parentId": "fld_news",
+      "name": "Crypto News",
+      "method": "GET",
+      "url": "{{ _.base_url }}/tools/news/crypto",
+      "parameters": [
+        { "name": "q", "value": "" },
+        { "name": "symbol", "value": "BTC" },
+        { "name": "page", "value": "{{ _.news_page }}" },
+        { "name": "size", "value": "10" }
+      ]
+    },
+    {
+      "_id": "req_news_sources",
+      "_type": "request",
+      "parentId": "fld_news",
+      "name": "News Sources",
+      "method": "GET",
+      "url": "{{ _.base_url }}/tools/news/sources",
+      "parameters": [
+        { "name": "country", "value": "{{ _.country }}" },
+        { "name": "language", "value": "{{ _.language }}" },
+        { "name": "category", "value": "" }
+      ]
+    }
+  ]
+}

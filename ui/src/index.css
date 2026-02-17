@@ -1,0 +1,317 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Hide number input spinners */
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  input[type="number"] {
+    -moz-appearance: textfield;
+  }
+}
+
+@layer components {
+  .sidebar-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(148, 163, 184, 0.35) transparent;
+  }
+
+  .sidebar-scroll::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .sidebar-scroll::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .sidebar-scroll::-webkit-scrollbar-thumb {
+    background-color: rgba(148, 163, 184, 0.35);
+    border-radius: 999px;
+  }
+
+  .sidebar-scroll::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(148, 163, 184, 0.55);
+  }
+
+  .chat-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(226, 232, 240, 0.35) transparent;
+  }
+
+  .chat-scroll::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .chat-scroll::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .chat-scroll::-webkit-scrollbar-thumb {
+    background-color: rgba(226, 232, 240, 0.35);
+    border-radius: 999px;
+  }
+
+  .chat-scroll::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(226, 232, 240, 0.55);
+  }
+
+  .custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(148, 163, 184, 0.35) transparent;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: rgba(148, 163, 184, 0.35);
+    border-radius: 999px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(148, 163, 184, 0.55);
+  }
+
+  /* ========================================
+   * CHAT PROSE STYLING
+   * Beautiful markdown rendering for AI responses
+   * ======================================== */
+  .chat-prose {
+    @apply text-slate-200 text-[14px] md:text-[15px] leading-[1.75];
+    font-feature-settings: "kern" 1, "liga" 1;
+  }
+
+  /* Paragraphs with proper breathing room */
+  .chat-prose p {
+    @apply mb-4 last:mb-0;
+  }
+
+  /* Headings with clear visual hierarchy */
+  .chat-prose h1 {
+    @apply text-xl md:text-2xl font-bold text-white mt-6 mb-4 pb-2 border-b border-white/10;
+  }
+
+  .chat-prose h2 {
+    @apply text-lg md:text-xl font-semibold text-white mt-6 mb-3;
+  }
+
+  .chat-prose h3 {
+    @apply text-base md:text-lg font-semibold text-white/95 mt-5 mb-2;
+  }
+
+  .chat-prose h4 {
+    @apply text-sm md:text-base font-semibold text-white/90 mt-4 mb-2;
+  }
+
+  /* Strong & emphasis with better contrast */
+  .chat-prose strong {
+    @apply font-semibold text-white;
+  }
+
+  .chat-prose em {
+    @apply italic text-slate-100;
+  }
+
+  /* Unordered lists with styled bullets */
+  .chat-prose ul {
+    @apply my-4 ml-1 space-y-2;
+    list-style: none;
+  }
+
+  .chat-prose ul>li {
+    @apply pl-6 relative;
+  }
+
+  .chat-prose ul>li::before {
+    content: "";
+    @apply absolute left-0 top-[0.6em] w-1.5 h-1.5 rounded-full bg-slate-400;
+  }
+
+  /* Nested lists */
+  .chat-prose ul ul {
+    @apply my-2 ml-2;
+  }
+
+  .chat-prose ul ul>li::before {
+    @apply w-1 h-1 bg-slate-400/60;
+  }
+
+  /* Ordered lists with styled numbers */
+  .chat-prose ol {
+    @apply my-4 ml-1 space-y-2;
+    list-style: none;
+    counter-reset: prose-counter;
+  }
+
+  .chat-prose ol>li {
+    @apply pl-8 relative;
+    counter-increment: prose-counter;
+  }
+
+  .chat-prose ol>li::before {
+    content: counter(prose-counter) ".";
+    @apply absolute left-0 top-0 font-semibold text-slate-400 text-[13px];
+  }
+
+  /* Blockquotes with accent styling */
+  .chat-prose blockquote {
+    @apply my-4 pl-4 py-2 border-l-2 border-blue-400/50 bg-white/[0.02] rounded-r-lg italic text-slate-300;
+  }
+
+  /* Code blocks with syntax-friendly styling */
+  .chat-prose pre {
+    @apply my-4 p-4 rounded-xl bg-[#0d1117] border border-white/10 overflow-x-auto text-[13px];
+  }
+
+  .chat-prose code {
+    @apply bg-white/10 px-1.5 py-0.5 rounded text-[13px] text-blue-300/90 font-mono;
+  }
+
+  .chat-prose pre code {
+    @apply bg-transparent p-0 text-slate-200;
+  }
+
+  /* Links with hover effects */
+  .chat-prose a {
+    @apply text-blue-400 underline decoration-blue-400/30 underline-offset-2 transition-colors hover:text-blue-300 hover:decoration-blue-300/50;
+  }
+
+  /* Horizontal rules */
+  .chat-prose hr {
+    @apply my-6 border-t border-white/10;
+  }
+
+  /* ========================================
+   * PREMIUM TABLE STYLING
+   * ======================================== */
+  .chat-prose-table-wrapper {
+    @apply my-5 overflow-x-auto rounded-xl border border-white/10 bg-white/[0.02];
+  }
+
+  .chat-prose table {
+    @apply w-full border-collapse text-[12px] md:text-[13px];
+    min-width: 400px;
+  }
+
+  .chat-prose thead {
+    @apply bg-white/[0.06] border-b border-white/10;
+  }
+
+  .chat-prose th {
+    @apply px-4 py-3 text-left font-semibold text-white/90 text-[11px] md:text-[12px] uppercase tracking-wider;
+  }
+
+  .chat-prose tbody tr {
+    @apply border-b border-white/[0.04] transition-colors;
+  }
+
+  .chat-prose tbody tr:last-child {
+    @apply border-b-0;
+  }
+
+  .chat-prose tbody tr:hover {
+    @apply bg-white/[0.03];
+  }
+
+  /* Alternating row colors for better readability */
+  .chat-prose tbody tr:nth-child(even) {
+    @apply bg-white/[0.015];
+  }
+
+  .chat-prose td {
+    @apply px-4 py-3 text-slate-200/90 align-top;
+  }
+
+  /* First column styling for emphasis */
+  .chat-prose td:first-child {
+    @apply font-medium text-white/90;
+  }
+
+  /* ========================================
+   * SECTION MARKERS FOR VISUAL RHYTHM
+   * ======================================== */
+  .chat-prose h2+p,
+  .chat-prose h3+p,
+  .chat-prose h4+p {
+    @apply mt-0;
+  }
+
+  /* Space after tables */
+  .chat-prose-table-wrapper+p,
+  .chat-prose-table-wrapper+h2,
+  .chat-prose-table-wrapper+h3,
+  .chat-prose-table-wrapper+ul,
+  .chat-prose-table-wrapper+ol {
+    @apply mt-5;
+  }
+}
