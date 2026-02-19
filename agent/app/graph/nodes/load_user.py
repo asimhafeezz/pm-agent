@@ -37,41 +37,15 @@ def load_user_node(services: GraphServices):
                 logger.warning('[%s] No auth token available to fetch userContext', run_id)
                 user_context = {}
 
-        # Validate key fields
         has_profile = bool(user_context.get('profile'))
-        has_summary = bool(user_context.get('summary'))
-        has_holdings = bool(user_context.get('portfolioHoldings'))
-
-        if not has_summary:
-            logger.warning('[%s] userContext missing "summary" field', run_id)
-        if not has_profile:
-            logger.warning('[%s] userContext missing "profile" field', run_id)
-
-        # Extract holding symbols for downstream nodes (e.g., portfolio_question enrichment)
-        holding_symbols: list[str] = []
-        holdings = user_context.get('portfolioHoldings') or []
-        if isinstance(holdings, list):
-            for h in holdings:
-                if isinstance(h, dict) and h.get('symbol'):
-                    holding_symbols.append(str(h['symbol']).upper())
-            if holding_symbols:
-                logger.info('[%s] User has %d holdings: %s', run_id, len(holdings), holding_symbols)
 
         await emit_event(services, state, 'loaded_user', {
             'hasProfile': has_profile,
-            'hasHoldings': has_holdings,
-            'holdingCount': len(holdings),
-            'holdingSymbols': holding_symbols,
+            'projectId': state.get('projectId'),
         })
-
-        constraints = [
-            {'type': 'budget', 'value': 0},
-        ]
 
         return {
             'userContext': user_context,
-            'userHoldingSymbols': holding_symbols,
-            'constraints': constraints,
         }
 
     return _node

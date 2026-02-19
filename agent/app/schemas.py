@@ -26,7 +26,6 @@ class CamelModel(BaseModel):
 
 class RunConfig(CamelModel):
     max_tool_calls: Optional[int] = None
-    max_news_articles_per_symbol: Optional[int] = None
     tool_timeout_seconds: Optional[float] = None
 
 
@@ -34,9 +33,9 @@ class RunRequest(CamelModel):
     run_id: str
     conversation_id: Optional[str] = None
     user_id: str
+    project_id: Optional[str] = None
     user_context: Dict[str, Any]
     question: str
-    symbols: Optional[List[str]] = None
     run_config: Optional[RunConfig] = None
 
 
@@ -48,9 +47,6 @@ class RunResult(CamelModel):
     run_id: str
     status: str
     final_answer: Optional[str] = None
-    decision: Optional[Dict[str, Any]] = None
-    allocations: Optional[List[Dict[str, Any]]] = None
-    risks: Optional[List[str]] = None
     warnings: Optional[List[str]] = None
     metadata: Optional[Dict[str, Any]] = None
     completed_at: Optional[datetime] = None

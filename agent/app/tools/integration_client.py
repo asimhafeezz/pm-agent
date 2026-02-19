@@ -1,87 +1,142 @@
 from __future__ import annotations
 
-from typing import Any, Dict, Optional
+import logging
+from typing import Any, Dict, List, Optional
 
-import httpx
+from app.tools import AppApiClient
 
-from app.config import get_settings
+logger = logging.getLogger(__name__)
 
 
 class IntegrationClient:
-    def __init__(self, base_url: Optional[str] = None, timeout_seconds: Optional[float] = None) -> None:
-        settings = get_settings()
-        self.base_url = base_url or settings.integration_base_url
-        self.timeout_seconds = timeout_seconds or settings.integration_timeout_seconds
-        self._client = httpx.AsyncClient(base_url=self.base_url, timeout=self.timeout_seconds)
+    """HTTP client for accessing integrations (Gmail, Linear) via the API proxy."""
 
-    async def close(self) -> None:
-        await self._client.aclose()
+    def __init__(self, api_client: AppApiClient) -> None:
+        self.api = api_client
 
-    async def get(self, path: str, params: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
-        from app.tools.resilience import with_retry
+    async def get_activity_stream(
+        self,
+        project_id: Optional[str] = None,
+        source: Optional[str] = None,
+        limit: int = 20,
+        auth_token: Optional[str] = None,
+    ) -> List[Dict[str, Any]]:
+        """Fetch recent activity events from the Activity Stream."""
+        params = []
+        if project_id:
+            params.append(f'projectId={project_id}')
+        if source:
+            params.append(f'source={source}')
+        params.append(f'limit={limit}')
+        query = '&'.join(params)
 
-        async def _do():
-            response = await self._client.get(path, params=params)
-            response.raise_for_status()
-            return response.json()
+        try:
+            result = await self.api.get(
+                f'/activity?{query}',
+                auth_token=auth_token,
+            )
+            if isinstance(result, dict):
+                return result.get('events', [])
+            return []
+        except Exception as exc:
+            logger.warning(f'Failed to fetch activity stream: {exc}')
+            return []
 
-        return await with_retry(_do, max_retries=2, base_delay=0.5)
+    async def search_gmail(
+        self,
+        query: str,
+        max_results: int = 10,
+        auth_token: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """Search Gmail messages via the API communication proxy."""
+        try:
+            result = await self.api.get(
+                f'/integrations/communication/gmail/search?query={query}&maxResults={max_results}',
+                auth_token=auth_token,
+            )
+            return result if isinstance(result, dict) else {}
+        except Exception as exc:
+            logger.warning(f'Failed to search Gmail: {exc}')
+            return {}
 
-    async def search_symbols(self, query: str, exchange: str | None = None, country: str | None = None) -> Dict[str, Any]:
-        return await self.get('/tools/market-prices/search-symbols', {
-            'query': query,
-            'exchange': exchange,
-            'country': country,
-        })
+    async def get_gmail_thread(
+        self,
+        thread_id: str,
+        auth_token: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """Get a Gmail thread with all messages."""
+        try:
+            result = await self.api.get(
+                f'/integrations/communication/gmail/threads/{thread_id}',
+                auth_token=auth_token,
+            )
+            return result if isinstance(result, dict) else {}
+        except Exception as exc:
+            logger.warning(f'Failed to fetch Gmail thread: {exc}')
+            return {}
 
-    async def batch_quote(self, symbols: list[str], interval: str | None = None, outputsize: int | None = None,
-                          start_date: str | None = None, end_date: str | None = None) -> Dict[str, Any]:
-        return await self.get('/tools/market-prices/batch-quote', {
-            'symbols': ','.join(symbols),
-            'interval': interval,
-            'outputsize': outputsize,
-            'start_date': start_date,
-            'end_date': end_date,
-        })
+    async def get_linear_issues(
+        self,
+        team_id: Optional[str] = None,
+        project_id: Optional[str] = None,
+        auth_token: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """Fetch Linear issues via the API project manager proxy."""
+        params = []
+        if team_id:
+            params.append(f'teamId={team_id}')
+        if project_id:
+            params.append(f'projectId={project_id}')
+        query = f'?{"&".join(params)}' if params else ''
 
-    async def time_series(self, symbol: str, interval: str | None = None, range: str | None = None,
-                          outputsize: int | None = None,
-                          start_date: str | None = None, end_date: str | None = None) -> Dict[str, Any]:
-        return await self.get('/tools/market-prices/time-series', {
-            'symbol': symbol,
-            'interval': interval,
-            'range': range,
-            'outputsize': outputsize,
-            'start_date': start_date,
-            'end_date': end_date,
-        })
+        try:
+            result = await self.api.get(
+                f'/integrations/linear/issues{query}',
+                auth_token=auth_token,
+            )
+            return result if isinstance(result, dict) else {}
+        except Exception as exc:
+            logger.warning(f'Failed to fetch Linear issues: {exc}')
+            return {}
 
-    async def fundamentals(self, symbol: str) -> Dict[str, Any]:
-        return await self.get('/tools/market-data/fundamentals', {'symbol': symbol})
+    async def get_meetings(
+        self,
+        project_id: str,
+        auth_token: Optional[str] = None,
+    ) -> List[Dict[str, Any]]:
+        """Fetch recent meetings with insights for a project."""
+        try:
+            result = await self.api.get(
+                f'/projects/{project_id}/meetings',
+                auth_token=auth_token,
+            )
+            if isinstance(result, list):
+                return result
+            return []
+        except Exception as exc:
+            logger.warning(f'Failed to fetch meetings: {exc}')
+            return []
 
-    async def earnings(self, symbol: str) -> Dict[str, Any]:
-        return await self.get('/tools/market-data/earnings', {'symbol': symbol})
+    async def get_linear_sync_summary(
+        self,
+        team_id: Optional[str] = None,
+        project_id: Optional[str] = None,
+        auth_token: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """Fetch Linear sprint sync summary."""
+        params = []
+        if team_id:
+            params.append(f'teamId={team_id}')
+        if project_id:
+            params.append(f'projectId={project_id}')
+        query = f'?{"&".join(params)}' if params else ''
 
-    async def earnings_calendar(self, start_date: str | None = None, end_date: str | None = None) -> Dict[str, Any]:
-        return await self.get('/tools/market-data/earnings-calendar', {
-            'from': start_date,
-            'to': end_date,
-        })
-
-    async def analyst_estimates(self, symbol: str, period: str | None = None, page: int | None = None,
-                                limit: int | None = None) -> Dict[str, Any]:
-        return await self.get('/tools/market-data/analyst-estimates', {
-            'symbol': symbol,
-            'period': period,
-            'page': page,
-            'limit': limit,
-        })
-
-    async def news_latest(self, params: Dict[str, Any]) -> Dict[str, Any]:
-        return await self.get('/tools/news/latest', params)
-
-    async def news_archive(self, params: Dict[str, Any]) -> Dict[str, Any]:
-        return await self.get('/tools/news/archive', params)
-
-    async def news_market(self, params: Dict[str, Any]) -> Dict[str, Any]:
-        return await self.get('/tools/news/market', params)
+        try:
+            result = await self.api.get(
+                f'/integrations/linear/sync-summary{query}',
+                auth_token=auth_token,
+            )
+            return result if isinstance(result, dict) else {}
+        except Exception as exc:
+            logger.warning(f'Failed to fetch Linear sync summary: {exc}')
+            return {}

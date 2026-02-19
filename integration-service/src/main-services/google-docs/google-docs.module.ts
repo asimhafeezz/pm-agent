@@ -1,0 +1,10 @@
+import { Global, Module } from '@nestjs/common';
+import { GoogleDocsService } from './google-docs.service';
+
+@Global()
+@Module({
+  providers: [GoogleDocsService],
+  exports: [GoogleDocsService],
+})
+export class GoogleDocsModule {}
+

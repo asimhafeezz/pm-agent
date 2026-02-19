@@ -12,7 +12,7 @@ import { ResponseInterceptor } from './common/interceptors/response.interceptor'
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  app.use(json({ limit: '5mb' }));
+  app.use(json({ limit: '60mb' }));
   app.use(helmet());
   app.enableCors();
   

@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { Loader2, TrendingUp as TrendingUpIcon, PanelLeft, Plus } from "lucide-react";
+import { Loader2, LayoutDashboard, FileText, Brain, Map, Ticket, Link2, PanelLeft, Plus, Activity, Users, Zap, ShieldAlert } from "lucide-react";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Search01Icon, Settings01Icon, Logout01Icon, MoreVerticalIcon, Delete02Icon, PencilEdit02Icon, PinIcon } from "@hugeicons/core-free-icons";
 import { useAuth } from "@/components/auth/auth-provider";
@@ -285,12 +285,65 @@ export function Sidebar({ className, onClose, autoCloseOnNav = false }: SidebarP
             action: () => { navigate("/"); if (autoCloseOnNav) onClose?.(); }
         },
         {
-            icon: TrendingUpIcon,
+            icon: LayoutDashboard,
             label: "Dashboard",
             isActive: normalizedPathname === "/dashboard" || normalizedPathname.startsWith("/dashboard/"),
             action: () => { navigate("/dashboard"); if (autoCloseOnNav) onClose?.(); }
         },
-
+        {
+            icon: FileText,
+            label: "Documents",
+            isActive: normalizedPathname === "/documents" || normalizedPathname.startsWith("/documents/"),
+            action: () => { navigate("/documents"); if (autoCloseOnNav) onClose?.(); }
+        },
+        {
+            icon: Brain,
+            label: "Knowledge",
+            isActive: normalizedPathname === "/knowledge" || normalizedPathname.startsWith("/knowledge/"),
+            action: () => { navigate("/knowledge"); if (autoCloseOnNav) onClose?.(); }
+        },
+        {
+            icon: Map,
+            label: "Roadmap",
+            isActive: normalizedPathname === "/roadmap" || normalizedPathname.startsWith("/roadmap/"),
+            action: () => { navigate("/roadmap"); if (autoCloseOnNav) onClose?.(); }
+        },
+        {
+            icon: Ticket,
+            label: "Tickets",
+            isActive: normalizedPathname === "/tickets" || normalizedPathname.startsWith("/tickets/"),
+            action: () => { navigate("/tickets"); if (autoCloseOnNav) onClose?.(); }
+        },
+        {
+            icon: Users,
+            label: "Meetings",
+            isActive: normalizedPathname === "/meetings" || normalizedPathname.startsWith("/meetings/"),
+            action: () => { navigate("/meetings"); if (autoCloseOnNav) onClose?.(); }
+        },
+        {
+            icon: Zap,
+            label: "Sprint",
+            isActive: normalizedPathname === "/sprint" || normalizedPathname.startsWith("/sprint/"),
+            action: () => { navigate("/sprint"); if (autoCloseOnNav) onClose?.(); }
+        },
+        {
+            icon: ShieldAlert,
+            label: "Intelligence",
+            isActive: normalizedPathname === "/intelligence" || normalizedPathname.startsWith("/intelligence/"),
+            action: () => { navigate("/intelligence"); if (autoCloseOnNav) onClose?.(); }
+        },
+        {
+            icon: Activity,
+            label: "Activity",
+            isActive: normalizedPathname === "/activity" || normalizedPathname.startsWith("/activity/"),
+            action: () => { navigate("/activity"); if (autoCloseOnNav) onClose?.(); }
+        },
+        {
+            icon: Link2,
+            label: "Integrations",
+            isActive: normalizedPathname === "/integrations" || normalizedPathname.startsWith("/integrations/"),
+            action: () => { navigate("/integrations"); if (autoCloseOnNav) onClose?.(); }
+        },
     ];
 
     const filteredConversations = conversations.filter(c =>
@@ -317,7 +370,7 @@ export function Sidebar({ className, onClose, autoCloseOnNav = false }: SidebarP
                         className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-slate-200/80 via-white/20 to-slate-200/80 drop-shadow-[0_1px_10px_rgba(255,255,255,0.18)] cursor-pointer"
                         onClick={() => navigate("/")}
                     >
-                        Finly.
+                        AgentPM
                     </h1>
                 </div>
                 {onClose && (

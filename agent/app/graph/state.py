@@ -9,39 +9,33 @@ class AgentState(TypedDict):
     question: str
     authToken: NotRequired[str]
     userContext: NotRequired[Dict[str, Any]]
-    userHoldingSymbols: NotRequired[List[str]]
+    projectId: NotRequired[str]
+
+    # Intent classification
     intent: NotRequired[Dict[str, Any]]
-    intentType: NotRequired[str]
-    requiredDataSources: NotRequired[List[str]]
-    dataQuality: NotRequired[Dict[str, str]]
+    intentType: NotRequired[str]  # general_chat, document_qa, roadmap_query, ticket_query, knowledge_query, meeting_query, risk_query, summary_query, priority_query, stakeholder_query
+
+    # Conversation context
     conversationHistory: NotRequired[List[Dict[str, Any]]]
-    constraints: NotRequired[List[Dict[str, Any]]]
-    candidates: NotRequired[List[Dict[str, Any]]]
-    resolvedCandidates: NotRequired[List[Dict[str, Any]]]
-    toolResults: NotRequired[Dict[str, Any]]
-    events: NotRequired[Dict[str, Any]]
-    prices: NotRequired[Dict[str, Any]]
-    timeSeries: NotRequired[Dict[str, Any]]
-    fundamentals: NotRequired[Dict[str, Any]]
-    estimates: NotRequired[Dict[str, Any]]
-    news: NotRequired[Dict[str, Any]]
-    sentiment: NotRequired[Dict[str, Any]]
-    scores: NotRequired[Dict[str, Any]]
-    decision: NotRequired[Dict[str, Any]]
-    visualization: NotRequired[Dict[str, Any]]
+    relevantMemories: NotRequired[List[Dict[str, Any]]]
+
+    # RAG context
+    retrievedDocuments: NotRequired[List[Dict[str, Any]]]
+    knowledgeContext: NotRequired[Dict[str, Any]]
+
+    # Integration context
+    activityContext: NotRequired[List[Dict[str, Any]]]
+    meetingContext: NotRequired[List[Dict[str, Any]]]
+    riskContext: NotRequired[List[Dict[str, Any]]]
+    summaryContext: NotRequired[Dict[str, Any]]
+
+    # Output
     finalAnswer: NotRequired[str]
     conversationTitle: NotRequired[str]
     memoryUpdates: NotRequired[Dict[str, Any]]
-    allocations: NotRequired[List[Dict[str, Any]]]
-    relevantMemories: NotRequired[List[Dict[str, Any]]]
+
+    # Metadata & diagnostics
     metadata: NotRequired[Dict[str, Any]]
+    warnings: NotRequired[List[str]]
     toolCallCount: NotRequired[int]
     timings: NotRequired[Dict[str, Any]]
-    providerUsed: NotRequired[Dict[str, Any]]
-    warnings: NotRequired[List[str]]
-    actions: NotRequired[List[Dict[str, Any]]]
-    webResearch: NotRequired[Dict[str, Any]]
-    deepReport: NotRequired[Dict[str, Any]]
-    analysisMode: NotRequired[str]
-    executionMode: NotRequired[str]
-    deepAnalysis: NotRequired[bool]

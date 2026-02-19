@@ -1,6 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
 import { Conversation } from '../../conversations/entities/conversation.entity';
 import { AgentRun } from '../../agent-runs/entities/agent-run.entity';
+import { OrganizationMember } from '../../organizations/entities/organization-member.entity';
 
 @Entity()
 export class User {
@@ -20,6 +21,9 @@ export class User {
   lastName: string;
 
   @Column({ nullable: true })
+  avatarUrl: string;
+
+  @Column({ nullable: true })
   authProvider: string | null;
 
   @Column({ nullable: true, unique: true })
@@ -27,6 +31,12 @@ export class User {
 
   @Column({ type: 'jsonb', nullable: true })
   authProviderMetadataJson: Record<string, unknown> | null;
+
+  @Column({ type: 'jsonb', nullable: true })
+  settings: Record<string, unknown>;
+
+  @Column({ type: 'uuid', nullable: true })
+  defaultOrganizationId: string;
 
   @Column({ type: 'timestamptz', nullable: true })
   lastLoginAt: Date | null;
@@ -42,4 +52,7 @@ export class User {
 
   @OneToMany(() => AgentRun, (run) => run.user)
   agentRuns: AgentRun[];
+
+  @OneToMany(() => OrganizationMember, (member) => member.user)
+  organizationMemberships: OrganizationMember[];
 }

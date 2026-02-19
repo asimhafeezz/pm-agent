@@ -26,6 +26,86 @@
 
 [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
+## Project Manager + Linear API
+
+This service now includes a generic `project-manager` module with provider routing.
+Current provider implemented: `linear`.
+
+- Base prefix: `/integration/project-manager/:provider`
+- Linear GraphQL URL: `https://api.linear.app/graphql` (override with `LINEAR_API_URL`)
+- Auth header uses `LINEAR_API_KEY`
+
+### Required env
+
+Use `integration-service/.env.example` as reference:
+
+```bash
+LINEAR_API_KEY=lin_api_xxx
+LINEAR_API_URL=https://api.linear.app/graphql
+```
+
+### Available endpoints
+
+- `GET /integration/project-manager/:provider/health`
+- `GET /integration/project-manager/:provider/viewer`
+- `GET /integration/project-manager/:provider/teams?first=50`
+- `GET /integration/project-manager/:provider/users?first=50&query=asim`
+- `GET /integration/project-manager/:provider/projects?first=50&teamId=<teamId>&query=<name>`
+- `GET /integration/project-manager/:provider/projects/:projectId`
+- `POST /integration/project-manager/:provider/projects`
+- `PATCH /integration/project-manager/:provider/projects/:projectId`
+- `GET /integration/project-manager/:provider/issues?first=50&teamId=<teamId>&projectId=<projectId>&stateName=In%20Progress&query=<title>`
+- `GET /integration/project-manager/:provider/issues/:issueId`
+- `POST /integration/project-manager/:provider/issues`
+- `PATCH /integration/project-manager/:provider/issues/:issueId`
+- `POST /integration/project-manager/:provider/issues/:issueId/comments`
+- `GET /integration/project-manager/:provider/teams/:teamId/cycles?first=20`
+- `POST /integration/project-manager/:provider/query` (raw GraphQL passthrough)
+
+Use `provider=linear` right now.
+
+### Example payloads
+
+Create issue:
+
+```json
+{
+  "input": {
+    "teamId": "team_uuid",
+    "title": "Implement Linear integration",
+    "description": "End-to-end Linear service setup"
+  }
+}
+```
+
+Update issue:
+
+```json
+{
+  "input": {
+    "stateId": "workflow_state_uuid",
+    "assigneeId": "user_uuid"
+  }
+}
+```
+
+Create comment:
+
+```json
+{
+  "body": "Integration is now live in integration-service."
+}
+```
+
+Raw GraphQL:
+
+```json
+{
+  "query": "query { viewer { id name email } }",
+  "variables": {}
+}
+```
+
 ## Project setup
 
 ```bash

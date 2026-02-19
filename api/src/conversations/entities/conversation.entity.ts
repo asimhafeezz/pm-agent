@@ -11,6 +11,9 @@ export class Conversation {
   @Column()
   userId: string;
 
+  @Column({ type: 'uuid', nullable: true })
+  projectId: string;
+
   @Column({ nullable: true })
   title: string;
 

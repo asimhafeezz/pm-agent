@@ -111,10 +111,7 @@ export function Cockpit({ children }: CockpitProps) {
                     )}
                 </div>
 
-                {/* Top Gradient Fade */}
-                <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-[#09090b] to-transparent pointer-events-none z-10" />
-
-                <div className="flex-1 relative z-0 overflow-hidden flex flex-col">
+                <div className="flex-1 relative z-0 overflow-hidden flex flex-col pt-14">
                     {children}
                 </div>
             </main>

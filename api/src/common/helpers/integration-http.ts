@@ -1,8 +1,14 @@
-import { BadGatewayException, ServiceUnavailableException } from '@nestjs/common';
+import { BadGatewayException, BadRequestException, ServiceUnavailableException } from '@nestjs/common';
 
 type FetchJsonOptions = {
   baseUrl: string;
   path: string;
+};
+
+type RequestJsonOptions = FetchJsonOptions & {
+  method?: 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE';
+  body?: unknown;
+  headers?: Record<string, string>;
 };
 
 function normalizeBaseUrl(url: string) {
@@ -22,7 +28,13 @@ function candidateBaseUrls(baseUrl: string) {
   return [normalized];
 }
 
-export async function fetchIntegrationJson({ baseUrl, path }: FetchJsonOptions) {
+export async function requestIntegrationJson({
+  baseUrl,
+  path,
+  method = 'GET',
+  body,
+  headers,
+}: RequestJsonOptions) {
   const candidates = candidateBaseUrls(baseUrl);
   if (candidates.length === 0) {
     throw new ServiceUnavailableException('INTEGRATION_SERVICE_URL is not configured.');
@@ -32,17 +44,26 @@ export async function fetchIntegrationJson({ baseUrl, path }: FetchJsonOptions) 
   for (const candidate of candidates) {
     const url = `${candidate}${path.startsWith('/') ? path : `/${path}`}`;
     try {
-      const response = await fetch(url);
+      const response = await fetch(url, {
+        method,
+        headers: {
+          ...(body === undefined ? {} : { 'Content-Type': 'application/json' }),
+          ...(headers || {}),
+        },
+        body: body === undefined ? undefined : JSON.stringify(body),
+      });
       if (!response.ok) {
         const bodyText = await response.text().catch(() => '');
-        throw new BadGatewayException(
-          `Integration service error (${response.status})${bodyText ? `: ${bodyText}` : ''}`,
-        );
+        const message = `Integration service error (${response.status})${bodyText ? `: ${bodyText}` : ''}`;
+        if (response.status >= 400 && response.status < 500) {
+          throw new BadRequestException(message);
+        }
+        throw new BadGatewayException(message);
       }
       return await response.json();
     } catch (error) {
       lastError = error;
-      if (error instanceof BadGatewayException) {
+      if (error instanceof BadRequestException || error instanceof BadGatewayException) {
         throw error;
       }
     }
@@ -54,3 +75,14 @@ export async function fetchIntegrationJson({ baseUrl, path }: FetchJsonOptions) 
   );
 }
 
+export async function fetchIntegrationJson(options: FetchJsonOptions) {
+  return requestIntegrationJson({ ...options, method: 'GET' });
+}
+
+export async function postIntegrationJson({
+  baseUrl,
+  path,
+  body,
+}: FetchJsonOptions & { body: unknown }) {
+  return requestIntegrationJson({ baseUrl, path, method: 'POST', body });
+}

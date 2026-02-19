@@ -12,15 +12,19 @@ class AppApiClient:
         settings = get_settings()
         self.base_url = base_url or settings.app_api_base_url
         self.timeout_seconds = timeout_seconds or settings.app_api_timeout_seconds
+        self.internal_api_key = settings.internal_api_key
         self._client = httpx.AsyncClient(base_url=self.base_url, timeout=self.timeout_seconds)
 
     async def close(self) -> None:
         await self._client.aclose()
 
     def _headers(self, auth_token: str | None) -> Dict[str, str]:
+        headers: Dict[str, str] = {}
+        if self.internal_api_key:
+            headers['X-Internal-Api-Key'] = self.internal_api_key
         if auth_token:
-            return {'Authorization': auth_token}
-        return {}
+            headers['Authorization'] = auth_token
+        return headers
 
     def _unwrap(self, payload: Dict[str, Any]) -> Dict[str, Any]:
         if isinstance(payload, dict) and 'data' in payload and 'success' in payload:

@@ -2,27 +2,18 @@ from __future__ import annotations
 
 from typing import Any, Dict, Optional
 
-from langchain_core.messages import HumanMessage, SystemMessage
-from langchain_groq import ChatGroq
-
-from app.config import get_settings
+from app.tools.llm.factory import create_llm_provider
 
 
 class LlmClient:
+    """Backward-compatible wrapper that delegates to a pluggable LLM provider."""
+
     def __init__(self, api_key: Optional[str] = None, model: Optional[str] = None) -> None:
-        settings = get_settings()
-        self.api_key = api_key if api_key is not None else settings.groq_api_key
-        self.model = model if model is not None else settings.groq_model
-        if not self.api_key:
-            raise RuntimeError('GROQ_API_KEY is not configured.')
-        # Single shared LLM client for the app lifecycle.
-        self._llm = ChatGroq(
-            api_key=self.api_key,
-            model=self.model,
-        )
+        self._provider = create_llm_provider(api_key=api_key, model=model)
+        self.model = getattr(self._provider, 'model', model)
 
     async def close(self) -> None:
-        return None
+        await self._provider.close()
 
     async def chat(
         self,
@@ -31,17 +22,9 @@ class LlmClient:
         temperature: float = 0.2,
         max_tokens: int = 8192,
     ) -> Dict[str, Any]:
-        from app.tools.resilience import with_retry
-
-        async def _do():
-            response = await self._llm.ainvoke(
-                [SystemMessage(content=system), HumanMessage(content=user)],
-                temperature=temperature,
-                max_tokens=max_tokens,
-            )
-            return {
-                'model': self.model,
-                'content': response.content,
-            }
-
-        return await with_retry(_do, max_retries=1, base_delay=1.0)
+        return await self._provider.chat(
+            system=system,
+            user=user,
+            temperature=temperature,
+            max_tokens=max_tokens,
+        )
